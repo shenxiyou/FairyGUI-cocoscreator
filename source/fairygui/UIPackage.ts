@@ -52,7 +52,7 @@ namespace fgui {
             return pkg;
         }
 
-        public static loadPackage(url: string, completeCallback: ((error: any) => void) | null): void {
+        public static loadPackage(url: string, completeCallback: ((error: any) => void) | null, processCallback?: any): void {
             cc.loader.loadRes(url, function (err, asset) {
                 if (err) {
                     completeCallback(err);
@@ -72,7 +72,7 @@ namespace fgui {
                         urls.push(pi.file);
                 }
 
-                cc.loader.loadResArray(urls, function (err, assets) {
+                cc.loader.loadResArray(urls, processCallback || function () { }, function (err, assets) {
                     if (!err) {
                         UIPackage._instById[pkg.id] = pkg;
                         UIPackage._instByName[pkg.name] = pkg;

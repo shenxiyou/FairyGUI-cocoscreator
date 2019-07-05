@@ -476,7 +476,7 @@ namespace fgui {
                 BlendModeUtils.apply(this._node, value);
             }
         }
-
+        
         public get onStage(): boolean {
             return this._node.activeInHierarchy;
         }
@@ -744,7 +744,8 @@ namespace fgui {
             this._node = null;
             n.destroy();
         }
-
+        protected onStart() {
+        }
         protected onEnable() {
         }
 
@@ -1174,7 +1175,12 @@ namespace fgui {
         public onClickLink(evt: Event, text: string) {
             this.node.emit(Event.LINK, text, evt);
         }
+        protected start() {
+            this.node["$gobj"].onStart();
 
+            if (this._emitDisplayEvents)
+                this.node.emit(Event.DISPLAY);
+        }
         protected onEnable() {
             this.node["$gobj"].onEnable();
 

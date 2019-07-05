@@ -324,8 +324,15 @@ namespace fgui {
         }
 
         protected loadExternal(): void {
-            if (ToolSet.startsWith(this._url, "http://") || ToolSet.startsWith(this._url, "https://"))
-                cc.loader.load(this._url, this.onLoaded.bind(this));
+            if (ToolSet.startsWith(this._url, "http://") || ToolSet.startsWith(this._url, "https://")) {
+                var index1 = this._url.lastIndexOf(".");
+                var index2 = this._url.length;
+                var suffix = this._url.substring(index1 + 1, index2);//后缀名
+                if (!suffix || suffix.length > 4) {
+                    cc.loader.load({ url: this._url, type: "jpg" }, this.onLoaded.bind(this));
+                } else
+                    cc.loader.load(this._url, this.onLoaded.bind(this));
+            }
             else
                 cc.loader.loadRes(this._url, cc.Asset, this.onLoaded.bind(this));
         }
@@ -350,6 +357,7 @@ namespace fgui {
         }
 
         protected onExternalLoadSuccess(texture: cc.SpriteFrame): void {
+            if (this._content.spriteFrame) this._content.spriteFrame.setTexture(null);
             this._content.spriteFrame = texture;
             this._content.type = cc.Sprite.Type.SIMPLE;
             this._contentSourceWidth = texture.getRect().width;
