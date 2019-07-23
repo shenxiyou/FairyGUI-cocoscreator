@@ -354,6 +354,7 @@ declare namespace fgui {
         text: string;
         icon: string;
         dispose(): void;
+        protected onStart(): void;
         protected onEnable(): void;
         protected onDisable(): void;
         protected onUpdate(): void;
@@ -401,6 +402,7 @@ declare namespace fgui {
         _emitDisplayEvents: boolean;
         callLater(callback: Function, delay?: number): void;
         onClickLink(evt: Event, text: string): void;
+        protected start(): void;
         protected onEnable(): void;
         protected onDisable(): void;
         protected update(dt: any): void;
@@ -1533,7 +1535,7 @@ declare namespace fgui {
         static getById(id: string): UIPackage;
         static getByName(name: string): UIPackage;
         static addPackage(url: string): UIPackage;
-        static loadPackage(url: string, completeCallback: ((error: any) => void) | null): void;
+        static loadPackage(url: string, completeCallback: ((error: any) => void) | null, processCallback?: any): void;
         static removePackage(packageIdOrName: string): void;
         static createObject(pkgName: string, resName: string, userClass?: any): GObject;
         static createObjectFromURL(url: string, userClass?: any): GObject;

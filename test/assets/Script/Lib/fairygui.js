@@ -1,5 +1,4 @@
-window.fgui = {};
-window.__extends = (this && this.__extends) || (function () {
+var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -12,7 +11,7 @@ window.__extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-
+var fgui;
 (function (fgui) {
     var AsyncOperation = /** @class */ (function () {
         function AsyncOperation() {
@@ -206,7 +205,7 @@ window.__extends = (this && this.__extends) || (function () {
         return DisplayListItem;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Controller = /** @class */ (function (_super) {
         __extends(Controller, _super);
@@ -454,7 +453,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(cc.EventTarget));
     fgui.Controller = Controller;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var DragDropManager = /** @class */ (function () {
         function DragDropManager() {
@@ -529,7 +528,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.DragDropManager = DragDropManager;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var ButtonMode;
     (function (ButtonMode) {
@@ -714,7 +713,7 @@ window.__extends = (this && this.__extends) || (function () {
         FillOrigin[FillOrigin["Right"] = 3] = "Right";
     })(FillOrigin = fgui.FillOrigin || (fgui.FillOrigin = {}));
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GObject = /** @class */ (function () {
         function GObject() {
@@ -1519,6 +1518,8 @@ window.__extends = (this && this.__extends) || (function () {
             this._node = null;
             n.destroy();
         };
+        GObject.prototype.onStart = function () {
+        };
         GObject.prototype.onEnable = function () {
         };
         GObject.prototype.onDisable = function () {
@@ -1897,6 +1898,11 @@ window.__extends = (this && this.__extends) || (function () {
         GObjectPartner.prototype.onClickLink = function (evt, text) {
             this.node.emit(fgui.Event.LINK, text, evt);
         };
+        GObjectPartner.prototype.start = function () {
+            this.node["$gobj"].onStart();
+            if (this._emitDisplayEvents)
+                this.node.emit(fgui.Event.DISPLAY);
+        };
         GObjectPartner.prototype.onEnable = function () {
             this.node["$gobj"].onEnable();
             if (this._emitDisplayEvents)
@@ -1918,7 +1924,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.GObjectPartner = GObjectPartner;
 })(fgui || (fgui = {}));
 /// <reference path="GObject.ts" />
-
+var fgui;
+/// <reference path="GObject.ts" />
 (function (fgui) {
     var GComponent = /** @class */ (function (_super) {
         __extends(GComponent, _super);
@@ -2973,7 +2980,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.GComponent = GComponent;
 })(fgui || (fgui = {}));
 /// <reference path="GComponent.ts" />
-
+var fgui;
+/// <reference path="GComponent.ts" />
 (function (fgui) {
     var GButton = /** @class */ (function (_super) {
         __extends(GButton, _super);
@@ -3439,7 +3447,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GButton = GButton;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GComboBox = /** @class */ (function (_super) {
         __extends(GComboBox, _super);
@@ -3839,7 +3847,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GComboBox = GComboBox;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GGraph = /** @class */ (function (_super) {
         __extends(GGraph, _super);
@@ -3942,7 +3950,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GObject));
     fgui.GGraph = GGraph;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GGroup = /** @class */ (function (_super) {
         __extends(GGroup, _super);
@@ -4299,7 +4307,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GObject));
     fgui.GGroup = GGroup;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GImage = /** @class */ (function (_super) {
         __extends(GImage, _super);
@@ -4407,7 +4415,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GObject));
     fgui.GImage = GImage;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GLabel = /** @class */ (function (_super) {
         __extends(GLabel, _super);
@@ -4570,7 +4578,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GLabel = GLabel;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GList = /** @class */ (function (_super) {
         __extends(GList, _super);
@@ -6653,7 +6661,7 @@ window.__extends = (this && this.__extends) || (function () {
         return ItemInfo;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GObjectPool = /** @class */ (function () {
         function GObjectPool() {
@@ -6706,7 +6714,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.GObjectPool = GObjectPool;
 })(fgui || (fgui = {}));
 /// <reference path="GObjectPool.ts" />
-
+var fgui;
+/// <reference path="GObjectPool.ts" />
 (function (fgui) {
     var GLoader = /** @class */ (function (_super) {
         __extends(GLoader, _super);
@@ -7032,8 +7041,16 @@ window.__extends = (this && this.__extends) || (function () {
                 this.setErrorState();
         };
         GLoader.prototype.loadExternal = function () {
-            if (fgui.ToolSet.startsWith(this._url, "http://") || fgui.ToolSet.startsWith(this._url, "https://"))
-                cc.loader.load(this._url, this.onLoaded.bind(this));
+            if (fgui.ToolSet.startsWith(this._url, "http://") || fgui.ToolSet.startsWith(this._url, "https://")) {
+                var index1 = this._url.lastIndexOf(".");
+                var index2 = this._url.length;
+                var suffix = this._url.substring(index1 + 1, index2); //后缀名
+                if (!suffix || suffix.length > 4) {
+                    cc.loader.load({ url: this._url, type: "jpg" }, this.onLoaded.bind(this));
+                }
+                else
+                    cc.loader.load(this._url, this.onLoaded.bind(this));
+            }
             else
                 cc.loader.loadRes(this._url, cc.Asset, this.onLoaded.bind(this));
         };
@@ -7052,6 +7069,8 @@ window.__extends = (this && this.__extends) || (function () {
         GLoader.prototype.freeExternal = function (texture) {
         };
         GLoader.prototype.onExternalLoadSuccess = function (texture) {
+            if (this._content.spriteFrame)
+                this._content.spriteFrame.setTexture(null);
             this._content.spriteFrame = texture;
             this._content.type = cc.Sprite.Type.SIMPLE;
             this._contentSourceWidth = texture.getRect().width;
@@ -7234,7 +7253,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GObject));
     fgui.GLoader = GLoader;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GMovieClip = /** @class */ (function (_super) {
         __extends(GMovieClip, _super);
@@ -7336,7 +7355,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GObject));
     fgui.GMovieClip = GMovieClip;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GProgressBar = /** @class */ (function (_super) {
         __extends(GProgressBar, _super);
@@ -7521,7 +7540,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GProgressBar = GProgressBar;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GTextField = /** @class */ (function (_super) {
         __extends(GTextField, _super);
@@ -7982,7 +8001,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.GTextField = GTextField;
 })(fgui || (fgui = {}));
 /// <reference path="GTextField.ts" />
-
+var fgui;
+/// <reference path="GTextField.ts" />
 (function (fgui) {
     var RichTextImageAtlas = /** @class */ (function (_super) {
         __extends(RichTextImageAtlas, _super);
@@ -8166,7 +8186,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GTextField));
     fgui.GRichTextField = GRichTextField;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GRoot = /** @class */ (function (_super) {
         __extends(GRoot, _super);
@@ -8547,7 +8567,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GRoot = GRoot;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GScrollBar = /** @class */ (function (_super) {
         __extends(GScrollBar, _super);
@@ -8678,7 +8698,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GScrollBar = GScrollBar;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GSlider = /** @class */ (function (_super) {
         __extends(GSlider, _super);
@@ -8890,7 +8910,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.GSlider = GSlider;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GTextInput = /** @class */ (function (_super) {
         __extends(GTextInput, _super);
@@ -9082,7 +9102,7 @@ window.__extends = (this && this.__extends) || (function () {
         return MyEditBox;
     }(cc.EditBox));
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Margin = /** @class */ (function () {
         function Margin() {
@@ -9104,7 +9124,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.Margin = Margin;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var PackageItem = /** @class */ (function () {
         function PackageItem() {
@@ -9125,7 +9145,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.PackageItem = PackageItem;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var PopupMenu = /** @class */ (function () {
         function PopupMenu(url) {
@@ -9291,7 +9311,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.PopupMenu = PopupMenu;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var RelationItem = /** @class */ (function () {
         function RelationItem(owner) {
@@ -9850,7 +9870,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.RelationDef = RelationDef;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Relations = /** @class */ (function () {
         function Relations(owner) {
@@ -9988,7 +10008,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.Relations = Relations;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var ScrollPane = /** @class */ (function (_super) {
         __extends(ScrollPane, _super);
@@ -11576,7 +11596,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(cc.Component));
     fgui.ScrollPane = ScrollPane;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Transition = /** @class */ (function () {
         function Transition(owner) {
@@ -12619,7 +12639,7 @@ window.__extends = (this && this.__extends) || (function () {
         return TValue;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var TranslationHelper = /** @class */ (function () {
         function TranslationHelper() {
@@ -12789,7 +12809,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.TranslationHelper = TranslationHelper;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var UIConfig = /** @class */ (function () {
         function UIConfig() {
@@ -12856,7 +12876,7 @@ window.__extends = (this && this.__extends) || (function () {
         return _fontRegistry[name];
     };
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var UIObjectFactory = /** @class */ (function () {
         function UIObjectFactory() {
@@ -12933,7 +12953,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.UIObjectFactory = UIObjectFactory;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var UIPackage = /** @class */ (function () {
         function UIPackage() {
@@ -12964,7 +12984,7 @@ window.__extends = (this && this.__extends) || (function () {
             UIPackage._instById[pkg._url] = pkg;
             return pkg;
         };
-        UIPackage.loadPackage = function (url, completeCallback) {
+        UIPackage.loadPackage = function (url, completeCallback, processCallback) {
             cc.loader.loadRes(url, function (err, asset) {
                 if (err) {
                     completeCallback(err);
@@ -12981,7 +13001,7 @@ window.__extends = (this && this.__extends) || (function () {
                     if (pi.type == fgui.PackageItemType.Atlas || pi.type == fgui.PackageItemType.Sound)
                         urls.push(pi.file);
                 }
-                cc.loader.loadResArray(urls, function (err, assets) {
+                cc.loader.loadResArray(urls, processCallback || function () { }, function (err, assets) {
                     if (!err) {
                         UIPackage._instById[pkg.id] = pkg;
                         UIPackage._instByName[pkg.name] = pkg;
@@ -13469,7 +13489,7 @@ window.__extends = (this && this.__extends) || (function () {
         return AtlasSprite;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Window = /** @class */ (function (_super) {
         __extends(Window, _super);
@@ -13734,7 +13754,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GComponent));
     fgui.Window = Window;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var ControllerAction = /** @class */ (function () {
         function ControllerAction() {
@@ -13776,7 +13796,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.ControllerAction = ControllerAction;
 })(fgui || (fgui = {}));
 /// <reference path="ControllerAction.ts" />
-
+var fgui;
+/// <reference path="ControllerAction.ts" />
 (function (fgui) {
     var ChangePageAction = /** @class */ (function (_super) {
         __extends(ChangePageAction, _super);
@@ -13812,7 +13833,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.ControllerAction));
     fgui.ChangePageAction = ChangePageAction;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var PlayTransitionAction = /** @class */ (function (_super) {
         __extends(PlayTransitionAction, _super);
@@ -13850,7 +13871,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.ControllerAction));
     fgui.PlayTransitionAction = PlayTransitionAction;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var BlendMode;
     (function (BlendMode) {
@@ -13900,7 +13921,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.BlendModeUtils = BlendModeUtils;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Image = /** @class */ (function (_super) {
         __extends(Image, _super);
@@ -14033,7 +14054,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.Image = Image;
 })(fgui || (fgui = {}));
 /// <reference path="Image.ts" />
-
+var fgui;
+/// <reference path="Image.ts" />
 (function (fgui) {
     var Frame = /** @class */ (function () {
         function Frame() {
@@ -14304,7 +14326,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.Image));
     fgui.MovieClip = MovieClip;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var Event = /** @class */ (function (_super) {
         __extends(Event, _super);
@@ -14386,7 +14408,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(cc.Event));
     fgui.Event = Event;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var PixelHitTest = /** @class */ (function () {
         function PixelHitTest(data, offsetX, offsetY) {
@@ -14423,7 +14445,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.PixelHitTestData = PixelHitTestData;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var InputProcessor = /** @class */ (function (_super) {
         __extends(InputProcessor, _super);
@@ -14830,7 +14852,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     ;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearBase = /** @class */ (function () {
         function GearBase(owner) {
@@ -14916,7 +14938,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.GearTweenConfig = GearTweenConfig;
 })(fgui || (fgui = {}));
 /// <reference path="GearBase.ts" />
-
+var fgui;
+/// <reference path="GearBase.ts" />
 (function (fgui) {
     var GearAnimation = /** @class */ (function (_super) {
         __extends(GearAnimation, _super);
@@ -14969,7 +14992,7 @@ window.__extends = (this && this.__extends) || (function () {
         return GearAnimationValue;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearColor = /** @class */ (function (_super) {
         __extends(GearColor, _super);
@@ -15027,7 +15050,7 @@ window.__extends = (this && this.__extends) || (function () {
         return GearColorValue;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearDisplay = /** @class */ (function (_super) {
         __extends(GearDisplay, _super);
@@ -15069,7 +15092,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GearBase));
     fgui.GearDisplay = GearDisplay;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearIcon = /** @class */ (function (_super) {
         __extends(GearIcon, _super);
@@ -15102,7 +15125,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GearBase));
     fgui.GearIcon = GearIcon;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearLook = /** @class */ (function (_super) {
         __extends(GearLook, _super);
@@ -15210,7 +15233,7 @@ window.__extends = (this && this.__extends) || (function () {
         return GearLookValue;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearSize = /** @class */ (function (_super) {
         __extends(GearSize, _super);
@@ -15325,7 +15348,7 @@ window.__extends = (this && this.__extends) || (function () {
         return GearSizeValue;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearText = /** @class */ (function (_super) {
         __extends(GearText, _super);
@@ -15358,7 +15381,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GearBase));
     fgui.GearText = GearText;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GearXY = /** @class */ (function (_super) {
         __extends(GearXY, _super);
@@ -15447,7 +15470,7 @@ window.__extends = (this && this.__extends) || (function () {
     }(fgui.GearBase));
     fgui.GearXY = GearXY;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var TreeNode = /** @class */ (function () {
         function TreeNode(hasChild) {
@@ -15676,7 +15699,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.TreeNode = TreeNode;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var TreeView = /** @class */ (function () {
         function TreeView(list) {
@@ -15990,7 +16013,44 @@ window.__extends = (this && this.__extends) || (function () {
 // LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+var fgui;
+// Author: Daniele Giardini - http://www.demigiant.com
+// Created: 2014/07/19 14:11
+// 
+// License Copyright (c) Daniele Giardini.
+// This work is subject to the terms at http://dotween.demigiant.com/license.php
+// 
+// =============================================================
+// Contains Daniele Giardini's C# port of the easing equations created by Robert Penner
+// (all easing equations except for Flash, InFlash, OutFlash, InOutFlash,
+// which use some parts of Robert Penner's equations but were created by Daniele Giardini)
+// http://robertpenner.com/easing, see license below:
+// =============================================================
+//
+// TERMS OF USE - EASING EQUATIONS
+//
+// Open source under the BSD License.
+//
+// Copyright ? 2001 Robert Penner
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without modification,
+// are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+// this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+// - Neither the name of the author nor the names of contributors may be used to endorse
+// or promote products derived from this software without specific prior written permission.
+// - THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+// EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (function (fgui) {
     var EaseManager = /** @class */ (function () {
         function EaseManager() {
@@ -16156,7 +16216,7 @@ window.__extends = (this && this.__extends) || (function () {
         return Bounce;
     }());
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var EaseType = /** @class */ (function () {
         function EaseType() {
@@ -16197,7 +16257,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.EaseType = EaseType;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GTween = /** @class */ (function () {
         function GTween() {
@@ -16237,7 +16297,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.GTween = GTween;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var GTweener = /** @class */ (function () {
         function GTweener() {
@@ -16671,7 +16731,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.GTweener = GTweener;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var TweenManager = /** @class */ (function () {
         function TweenManager() {
@@ -16783,7 +16843,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.TweenManager = TweenManager;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var TweenValue = /** @class */ (function () {
         function TweenValue() {
@@ -16841,7 +16901,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.TweenValue = TweenValue;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var ByteBuffer = /** @class */ (function () {
         function ByteBuffer(buffer, offset, length) {
@@ -17021,7 +17081,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.ByteBuffer = ByteBuffer;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var ColorMatrix = /** @class */ (function () {
         function ColorMatrix() {
@@ -17147,7 +17207,7 @@ window.__extends = (this && this.__extends) || (function () {
     }());
     fgui.ColorMatrix = ColorMatrix;
 })(fgui || (fgui = {}));
-
+var fgui;
 (function (fgui) {
     var UBBParser = /** @class */ (function () {
         function UBBParser() {
@@ -17301,7 +17361,8 @@ window.__extends = (this && this.__extends) || (function () {
     fgui.UBBParser = UBBParser;
 })(fgui || (fgui = {}));
 /// <reference path="UBBParser.ts" />
-
+var fgui;
+/// <reference path="UBBParser.ts" />
 (function (fgui) {
     var ToolSet = /** @class */ (function () {
         function ToolSet() {
