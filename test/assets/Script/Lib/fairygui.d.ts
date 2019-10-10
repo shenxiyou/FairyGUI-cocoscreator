@@ -618,6 +618,7 @@ declare namespace fgui {
         private _lineColor;
         private _fillColor;
         private _cornerRadius;
+        private _hasContent;
         constructor();
         drawRect(lineSize: number, lineColor: cc.Color, fillColor: cc.Color, corner?: Array<number>): void;
         drawEllipse(lineSize: number, lineColor: cc.Color, fillColor: cc.Color): void;
@@ -912,6 +913,7 @@ declare namespace fgui {
     class GTextField extends GObject {
         _label: cc.Label;
         protected _font: string;
+        protected _realFont: string | cc.Font;
         protected _fontSize: number;
         protected _color: cc.Color;
         protected _strokeColor: cc.Color;
@@ -948,7 +950,9 @@ declare namespace fgui {
         readonly textWidth: number;
         ensureSizeCorrect(): void;
         protected updateText(): void;
-        protected updateFont(value: string | cc.Font): void;
+        protected assignFont(label: any, value: string | cc.Font): void;
+        protected assignFontColor(label: any, value: cc.Color): void;
+        protected updateFont(): void;
         protected updateFontColor(): void;
         protected updateStrokeColor(): void;
         protected updateFontSize(): void;
@@ -984,7 +988,7 @@ declare namespace fgui {
         singleLine: boolean;
         protected markSizeChanged(): void;
         protected updateText(): void;
-        protected updateFont(value: string | cc.Font): void;
+        protected updateFont(): void;
         protected updateFontColor(): void;
         protected updateFontSize(): void;
         protected updateOverflow(): void;
@@ -1117,7 +1121,7 @@ declare namespace fgui {
         requestFocus(): void;
         protected markSizeChanged(): void;
         protected updateText(): void;
-        protected updateFont(value: string | cc.Font): void;
+        protected updateFont(): void;
         protected updateFontColor(): void;
         protected updateFontSize(): void;
         protected updateOverflow(): void;
@@ -1673,6 +1677,9 @@ declare namespace fgui {
         private _fillOrigin;
         private _fillAmount;
         private _fillClockwise;
+        private _grayed;
+        private _graySpriteMaterial;
+        private _spriteMaterial;
         constructor();
         flip: FlipType;
         fillMethod: FillMethod;
@@ -1680,6 +1687,7 @@ declare namespace fgui {
         fillClockwise: boolean;
         fillAmount: number;
         private setupFill;
+        grayed: boolean;
     }
 }
 declare namespace fgui {

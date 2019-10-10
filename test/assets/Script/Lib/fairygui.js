@@ -1086,23 +1086,12 @@ var fgui;
         });
         Object.defineProperty(GObject.prototype, "rotation", {
             get: function () {
-                var x = this._node.angle;
-                if (x != undefined)
-                    return -x;
-                else
-                    return this._node.rotation;
+                return -this._node.angle;
             },
             set: function (value) {
-                var x = this._node.angle; //2.1才开始加的接口，兼容一下
-                if (x != undefined) {
-                    value = -value;
-                    if (x != value) {
-                        this._node.angle = value;
-                        this.updateGear(3);
-                    }
-                }
-                else if (this._node.rotation != value) {
-                    this._node.rotation = value;
+                value = -value;
+                if (this._node.angle != value) {
+                    this._node.angle = value;
                     this.updateGear(3);
                 }
             },
@@ -1596,8 +1585,9 @@ var fgui;
                 pt.x -= this.node.anchorX * this._width;
                 pt.y += (1 - this.node.anchorY) * this._height;
             }
-            pt.set(this._node.convertToWorldSpaceAR(pt));
-            pt.y = fgui.GRoot.inst.height - pt.y;
+            var v3 = this._node.convertToWorldSpaceAR(pt);
+            pt.x = v3.x;
+            pt.y = fgui.GRoot.inst.height - v3.y;
             return pt;
         };
         GObject.prototype.globalToLocal = function (ax, ay, resultPoint) {
@@ -1608,10 +1598,12 @@ var fgui;
             var pt = resultPoint || new cc.Vec2();
             pt.x = ax;
             pt.y = fgui.GRoot.inst.height - ay;
-            pt.set(this._node.convertToNodeSpaceAR(pt));
+            var v3 = this._node.convertToNodeSpaceAR(pt);
+            pt.x = v3.x;
+            pt.y = v3.y;
             if (!this._pivotAsAnchor) {
-                pt.x -= this.node.anchorX * this._width;
-                pt.y += (1 - this.node.anchorY) * this._height;
+                pt.x -= this._node.anchorX * this._width;
+                pt.y += (1 - this._node.anchorY) * this._height;
             }
             pt.y = -pt.y;
             return pt;
@@ -1693,7 +1685,9 @@ var fgui;
         GObject.prototype.hitTest = function (globalPt) {
             if (this._touchDisabled || !this._touchable || !this._node.activeInHierarchy)
                 return null;
-            var pt = this._node.convertToNodeSpace(globalPt);
+            var pt = this._node.convertToNodeSpaceAR(globalPt);
+            pt.x += this._node.anchorX * this._width;
+            pt.y += this._node.anchorY * this._height;
             if (pt.x >= 0 && pt.y >= 0 && pt.x < this._width && pt.y < this._height)
                 return this;
             else
@@ -2416,6 +2410,7 @@ var fgui;
         GComponent.prototype.setMask = function (value, inverted) {
             if (this._maskContent) {
                 this._maskContent.node.off(cc.Node.EventType.POSITION_CHANGED, this.onMaskContentChanged, this);
+                this._maskContent.node.off(cc.Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
                 this._maskContent.node.off(cc.Node.EventType.SCALE_CHANGED, this.onMaskContentChanged, this);
                 this._maskContent.node.off(cc.Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
                 this._maskContent.visible = true;
@@ -2435,6 +2430,7 @@ var fgui;
                 }
                 value.visible = false;
                 value.node.on(cc.Node.EventType.POSITION_CHANGED, this.onMaskContentChanged, this);
+                value.node.on(cc.Node.EventType.SIZE_CHANGED, this.onMaskContentChanged, this);
                 value.node.on(cc.Node.EventType.SCALE_CHANGED, this.onMaskContentChanged, this);
                 value.node.on(cc.Node.EventType.ANCHOR_CHANGED, this.onMaskContentChanged, this);
                 this._customMask.inverted = inverted;
@@ -2525,7 +2521,7 @@ var fgui;
             else if (this._scrollPane)
                 this._scrollPane.adjustMaskContainer();
             else
-                this._container.setPosition(this._pivotCorrectX, this._pivotCorrectY);
+                this._container.setPosition(this._pivotCorrectX + this._alignOffset.x, this._pivotCorrectY - this._alignOffset.y);
         };
         GComponent.prototype.handleSizeChanged = function () {
             _super.prototype.handleSizeChanged.call(this);
@@ -2566,7 +2562,9 @@ var fgui;
             }
             var flag = 0;
             if (this.hitArea || this._rectMask) {
-                var pt = this._node.convertToNodeSpace(globalPt);
+                var pt = this._node.convertToNodeSpaceAR(globalPt);
+                pt.x += this._node.anchorX * this._width;
+                pt.y += this._node.anchorY * this._height;
                 if (pt.x >= 0 && pt.y >= 0 && pt.x < this._width && pt.y < this._height)
                     flag = 1;
                 else
@@ -2596,7 +2594,9 @@ var fgui;
             }
             if (this._opaque) {
                 if (flag == 0) {
-                    var pt = this._node.convertToNodeSpace(globalPt);
+                    var pt = this._node.convertToNodeSpaceAR(globalPt);
+                    pt.x += this._node.anchorX * this._width;
+                    pt.y += this._node.anchorY * this._height;
                     if (pt.x >= 0 && pt.y >= 0 && pt.x < this._width && pt.y < this._height)
                         flag = 1;
                     else
@@ -3881,7 +3881,10 @@ var fgui;
         };
         GGraph.prototype.clearGraphics = function () {
             this._type = fgui.GraphType.PlaceHolder;
-            this._content.clear();
+            if (this._hasContent) {
+                this._content.clear();
+                this._hasContent = false;
+            }
         };
         Object.defineProperty(GGraph.prototype, "type", {
             get: function () {
@@ -3904,7 +3907,10 @@ var fgui;
         });
         GGraph.prototype.drawCommon = function () {
             var ctx = this._content;
-            ctx.clear();
+            if (this._hasContent) {
+                this._hasContent = false;
+                ctx.clear();
+            }
             var w = this._width;
             var h = this._height;
             if (w == 0 || h == 0)
@@ -3924,6 +3930,7 @@ var fgui;
             if (this._lineSize != 0)
                 ctx.stroke();
             ctx.fill();
+            this._hasContent = true;
         };
         GGraph.prototype.handleSizeChanged = function () {
             _super.prototype.handleSizeChanged.call(this);
@@ -4393,10 +4400,9 @@ var fgui;
             else if (this.packageItem.scaleByTile)
                 this._content.type = cc.Sprite.Type.TILED;
             this._content.spriteFrame = this.packageItem.asset;
-            this._content.setState(this._grayed ? cc.Sprite.State.GRAY : cc.Sprite.State.NORMAL);
         };
         GImage.prototype.handleGrayedChanged = function () {
-            this._content.setState(this._grayed ? cc.Sprite.State.GRAY : cc.Sprite.State.NORMAL);
+            this._content.grayed = this._grayed;
         };
         GImage.prototype.setup_beforeAdd = function (buffer, beginPos) {
             _super.prototype.setup_beforeAdd.call(this, buffer, beginPos);
@@ -6285,10 +6291,8 @@ var fgui;
                 this._alignOffset.y = newOffsetY;
                 if (this._scrollPane != null)
                     this._scrollPane.adjustMaskContainer();
-                else {
-                    this._container.x = this._margin.left + this._alignOffset.x;
-                    this._container.y = this._margin.top + this._alignOffset.y;
-                }
+                else
+                    this._container.setPosition(this._pivotCorrectX + this._alignOffset.x, this._pivotCorrectY - this._alignOffset.y);
             }
         };
         GList.prototype.updateBounds = function () {
@@ -7209,7 +7213,7 @@ var fgui;
                 this.updateLayout();
         };
         GLoader.prototype.handleGrayedChanged = function () {
-            this._content.setState(this._grayed ? cc.Sprite.State.GRAY : cc.Sprite.State.NORMAL);
+            this._content.grayed = this._grayed;
         };
         GLoader.prototype.hitTest = function (globalPt) {
             if (this._touchDisabled || !this._touchable || !this._node.activeInHierarchy)
@@ -7219,7 +7223,9 @@ var fgui;
                 if (obj)
                     return obj;
             }
-            var pt = this._node.convertToNodeSpace(globalPt);
+            var pt = this._node.convertToNodeSpaceAR(globalPt);
+            pt.x += this._node.anchorX * this._width;
+            pt.y += this._node.anchorY * this._height;
             if (pt.x >= 0 && pt.y >= 0 && pt.x < this._width && pt.y < this._height)
                 return this;
             else
@@ -7327,7 +7333,7 @@ var fgui;
             this._content.setPlaySettings(start, end, times, endAt, endCallback, callbackObj);
         };
         GMovieClip.prototype.handleGrayedChanged = function () {
-            this._content.setState(this._grayed ? cc.Sprite.State.GRAY : cc.Sprite.State.NORMAL);
+            this._content.grayed = this._grayed;
         };
         GMovieClip.prototype.constructFromResource = function () {
             this.sourceWidth = this.packageItem.width;
@@ -7592,12 +7598,13 @@ var fgui;
                     var newFont = value ? value : fgui.UIConfig.defaultFont;
                     if (fgui.ToolSet.startsWith(newFont, "ui://")) {
                         var pi = fgui.UIPackage.getItemByURL(newFont);
-                        if (pi) {
-                            this.updateFont(pi.owner.getItemAsset(pi));
-                            return;
-                        }
+                        if (pi)
+                            newFont = pi.owner.getItemAsset(pi);
+                        else
+                            newFont = fgui.UIConfig.defaultFont;
                     }
-                    this.updateFont(newFont);
+                    this._realFont = newFont;
+                    this.updateFont();
                 }
             },
             enumerable: true,
@@ -7857,7 +7864,10 @@ var fgui;
         });
         GTextField.prototype.ensureSizeCorrect = function () {
             if (this._sizeDirty) {
-                this._label["_updateRenderData"](true);
+                if (this._label["_forceUpdateRenderData"]) //2.1 above
+                    this._label["_forceUpdateRenderData"]();
+                else
+                    this._label["_updateRenderData"](true);
                 this._sizeDirty = false;
             }
         };
@@ -7869,29 +7879,32 @@ var fgui;
                 text2 = fgui.UBBParser.inst.parse(fgui.ToolSet.encodeHTML(text2), true);
             this._label.string = text2;
         };
-        GTextField.prototype.updateFont = function (value) {
+        GTextField.prototype.assignFont = function (label, value) {
             if (value instanceof cc.Font)
-                this._label.font = value;
+                label.font = value;
             else {
                 var font = fgui.getFontByName(value);
                 if (!font) {
-                    this._label.fontFamily = value;
-                    this._label.isSystemFontUsed = true;
+                    label.fontFamily = value;
+                    label.useSystemFont = true;
                 }
                 else
-                    this._label.font = font;
+                    label.font = font;
             }
         };
-        GTextField.prototype.updateFontColor = function () {
-            var c = this._color;
-            if (this._label) {
-                var font = this._label.font;
-                if ((font instanceof cc.BitmapFont) && !(font._fntConfig.canTint))
-                    c = cc.Color.WHITE;
-            }
+        GTextField.prototype.assignFontColor = function (label, value) {
+            var font = label.font;
+            if ((font instanceof cc.BitmapFont) && !(font._fntConfig.canTint))
+                value = cc.Color.WHITE;
             if (this._grayed)
-                c = fgui.ToolSet.toGrayed(c);
-            this._node.color = c;
+                value = fgui.ToolSet.toGrayed(value);
+            label.node.color = value;
+        };
+        GTextField.prototype.updateFont = function () {
+            this.assignFont(this._label, this._realFont);
+        };
+        GTextField.prototype.updateFontColor = function () {
+            this.assignFontColor(this._label, this._color);
         };
         GTextField.prototype.updateStrokeColor = function () {
             if (!this._outline)
@@ -8149,15 +8162,11 @@ var fgui;
             else
                 this._richText.string = text2;
         };
-        GRichTextField.prototype.updateFont = function (value) {
-            if (value instanceof cc.TTFFont)
-                this._richText.font = value;
-            else
-                this._richText.font = null;
+        GRichTextField.prototype.updateFont = function () {
+            this.assignFont(this._richText, this._realFont);
         };
-        //不支持使用Node的颜色，等CCC支持后可以删掉这个函数
         GRichTextField.prototype.updateFontColor = function () {
-            this.updateText();
+            this.assignFontColor(this._richText, this._color);
         };
         GRichTextField.prototype.updateFontSize = function () {
             var fontSize = this._fontSize;
@@ -8922,8 +8931,8 @@ var fgui;
         }
         GTextInput.prototype.createRenderer = function () {
             this._editBox = this._node.addComponent(MyEditBox);
-            this._editBox.placeholder = "";
             this._editBox.maxLength = -1;
+            this._editBox["_updateTextLabel"]();
             this._node.on('text-changed', this.onTextChanged, this);
             this.on(fgui.Event.TOUCH_END, this.onTouchEnd1, this);
             this.autoSize = fgui.AutoSizeType.None;
@@ -8956,16 +8965,24 @@ var fgui;
             },
             set: function (val) {
                 this._promptText = val;
-                this._editBox.placeholder = fgui.UBBParser.inst.parse(this._promptText, true);
+                var newCreate = !this._editBox.placeholderLabel;
+                this._editBox["_updatePlaceholderLabel"]();
+                if (newCreate)
+                    this.assignFont(this._editBox.placeholderLabel, this._realFont);
+                this._editBox.placeholderLabel.string = fgui.UBBParser.inst.parse(this._promptText, true);
                 if (fgui.UBBParser.inst.lastColor) {
-                    var c = this._editBox.placeholderFontColor;
+                    var c = this._editBox.placeholderLabel.node.color;
                     if (!c)
                         c = new cc.Color();
                     c.fromHEX(fgui.UBBParser.inst.lastColor);
-                    this._editBox.placeholderFontColor = c;
+                    this.assignFontColor(this._editBox.placeholderLabel, c);
                 }
+                else
+                    this.assignFontColor(this._editBox.placeholderLabel, this._color);
                 if (fgui.UBBParser.inst.lastSize)
-                    this._editBox.placeholderFontSize = parseInt(fgui.UBBParser.inst.lastSize);
+                    this._editBox.placeholderLabel.fontSize = parseInt(fgui.UBBParser.inst.lastSize);
+                else
+                    this._editBox.placeholderLabel.fontSize = this._fontSize;
             },
             enumerable: true,
             configurable: true
@@ -8993,20 +9010,20 @@ var fgui;
         });
         Object.defineProperty(GTextInput.prototype, "align", {
             get: function () {
-                return cc.Label.HorizontalAlign.LEFT;
+                return this._editBox.textLabel.horizontalAlign;
             },
             set: function (value) {
-                //not supported
+                this._editBox.textLabel.horizontalAlign = value;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(GTextInput.prototype, "verticalAlign", {
             get: function () {
-                return cc.Label.VerticalAlign.TOP;
+                return this._editBox.textLabel.verticalAlign;
             },
             set: function (value) {
-                //not supported
+                this._editBox.textLabel.verticalAlign = value;
             },
             enumerable: true,
             configurable: true
@@ -9045,15 +9062,19 @@ var fgui;
                 text2 = fgui.UBBParser.inst.parse(fgui.ToolSet.encodeHTML(text2), true);
             this._editBox.string = text2;
         };
-        GTextInput.prototype.updateFont = function (value) {
-            //not supported
+        GTextInput.prototype.updateFont = function () {
+            this.assignFont(this._editBox.textLabel, this._realFont);
+            if (this._editBox.placeholderLabel)
+                this.assignFont(this._editBox.placeholderLabel, this._realFont);
         };
         GTextInput.prototype.updateFontColor = function () {
-            this._editBox.fontColor = this._color;
+            this.assignFontColor(this._editBox.textLabel, this._color);
         };
         GTextInput.prototype.updateFontSize = function () {
-            this._editBox.fontSize = this._fontSize;
-            this._editBox.lineHeight = this._fontSize + this._leading;
+            this._editBox.textLabel.fontSize = this._fontSize;
+            this._editBox.textLabel.lineHeight = this._fontSize + this._leading;
+            if (this._editBox.placeholderLabel)
+                this._editBox.placeholderLabel.fontSize = this._editBox.textLabel.fontSize;
         };
         GTextInput.prototype.updateOverflow = function () {
             //not supported
@@ -9093,10 +9114,19 @@ var fgui;
         MyEditBox.prototype._registerEvent = function () {
             //取消掉原来的事件处理
         };
+        MyEditBox.prototype._syncSize = function () {
+            var size = this.node.getContentSize();
+            var impl = this["_impl"];
+            impl.setSize(size.width, size.height);
+            if (this.textLabel)
+                this.textLabel.node.setContentSize(size.width, size.height);
+            if (this.placeholderLabel)
+                this.placeholderLabel.node.setContentSize(size.width, size.height);
+        };
         MyEditBox.prototype.openKeyboard = function (touch) {
             var impl = this["_impl"];
             if (impl) {
-                impl._onTouchEnded(touch);
+                impl.beginEditing();
             }
         };
         return MyEditBox;
@@ -10166,7 +10196,9 @@ var fgui;
                 if (target)
                     return target;
             }
-            var pt = this._maskContainer.convertToNodeSpace(globalPt);
+            var pt = this._maskContainer.convertToNodeSpaceAR(globalPt);
+            pt.x += this._maskContainer.anchorX * this._viewSize.x;
+            pt.y += this._maskContainer.anchorY * this._viewSize.y;
             if (pt.x >= 0 && pt.y >= 0 && pt.x < this._viewSize.x && pt.y < this._viewSize.y)
                 return this._owner;
             else
@@ -13475,6 +13507,7 @@ var fgui;
             var spriteFrame = new cc.SpriteFrame();
             spriteFrame.setTexture(mainTexture);
             font.spriteFrame = spriteFrame;
+            font.onLoad();
         };
         UIPackage._constructing = 0;
         UIPackage._instById = {};
@@ -13892,12 +13925,12 @@ var fgui;
         function BlendModeUtils() {
         }
         BlendModeUtils.apply = function (node, blendMode) {
-            var renderer = node.getComponent(cc.RenderComponent);
-            if (renderer) {
-                var f = BlendModeUtils.factors[blendMode];
-                renderer.srcBlendFactor = f[0];
-                renderer.dstBlendFactor = f[1];
-            }
+            var f = BlendModeUtils.factors[blendMode];
+            var renderers = node.getComponentsInChildren(cc.RenderComponent);
+            renderers.forEach(function (element) {
+                element.srcBlendFactor = f[0];
+                element.dstBlendFactor = f[1];
+            });
         };
         BlendModeUtils.override = function (blendMode, srcFactor, dstFactor) {
             BlendModeUtils.factors[blendMode][0] = srcFactor;
@@ -13932,6 +13965,7 @@ var fgui;
             _this._fillOrigin = fgui.FillOrigin.Left;
             _this._fillAmount = 0;
             _this._fillClockwise = false;
+            _this._grayed = false;
             _this.sizeMode = cc.Sprite.SizeMode.CUSTOM;
             _this.trim = false;
             return _this;
@@ -14049,6 +14083,35 @@ var fgui;
                 }
             }
         };
+        Object.defineProperty(Image.prototype, "grayed", {
+            get: function () {
+                return this._grayed;
+            },
+            set: function (value) {
+                if (this._grayed == value)
+                    return;
+                this._grayed = value;
+                var material;
+                if (value) {
+                    material = this._graySpriteMaterial;
+                    if (!material) {
+                        material = cc.Material.getBuiltinMaterial('2d-gray-sprite');
+                    }
+                    material = this._graySpriteMaterial = cc.Material.getInstantiatedMaterial(material, this);
+                }
+                else {
+                    material = this._spriteMaterial;
+                    if (!material) {
+                        material = cc.Material.getBuiltinMaterial('2d-sprite', this);
+                    }
+                    material = this._spriteMaterial = cc.Material.getInstantiatedMaterial(material, this);
+                }
+                this.setMaterial(0, material);
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ;
         return Image;
     }(cc.Sprite));
     fgui.Image = Image;
@@ -14702,7 +14765,7 @@ var fgui;
         InputProcessor.prototype.updateInfo = function (touchId, pos, touch) {
             var camera = cc.Camera.findCamera(this.node);
             if (camera)
-                camera.getCameraToWorldPoint(pos, this._touchPos);
+                camera.getScreenToWorldPoint(pos, this._touchPos);
             else
                 this._touchPos.set(pos);
             var target = this._owner.hitTest(this._touchPos);
